@@ -1,0 +1,882 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfluCoach - Trouve ton coach influenceur idéal</title>
+    <style>
+        /* Reset CSS optimisé */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        #mot-changeant {
+          background: linear-gradient(90deg, #ff6b6b, #9333ea);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          transition: opacity 0.5s;
+        }
+        :root {
+            --primary: #9333ea;
+            --primary-light: #c084fc;
+            --primary-dark: #6b21a8;
+            --primary-gradient: linear-gradient(135deg, #6b21a8, #9333ea, #3b82f6);
+            --primary-hover-gradient: linear-gradient(135deg, #7c3aed, #a855f7, #60a5fa);
+            --accent: #ff3b30;
+            --text-main: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --background: #0f172a;
+            --background-darker: #020617;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --surface-accent: #0f172a;
+            --border: #475569;
+            --border-hover: #64748b;
+            --bg-light: #334155;
+            --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.5);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 30px;
+            --transition: all 0.3s ease;
+            --glow: 0 0 15px rgba(147, 51, 234, 0.5);
+        }
+        body {
+            background: var(--background);
+            background: linear-gradient(135deg, var(--background-darker), var(--background), #1a1462);
+            color: var(--text-main);
+            line-height: 1.5;
+            font-size: 16px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .top-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+        .top-button {
+            background: none;
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s;
+        }
+        .top-button:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+        /* Header et section héro */
+        .hero-section {
+			padding: 150px 40px;
+			text-align: left;
+			background-image: url('https://www.hebergeur-image.fr/uploads/20250507/ef04731ef44bee65940db3439f10201142453196.png');
+			background-size: contain; /* Changement de 'cover' à 'contain' pour réduire le zoom */
+			background-position: center top; /* Pour centrer horizontalement et aligner en haut */
+			background-repeat: no-repeat; /* Évite la répétition de l'image */
+			position: relative;
+			overflow: hidden;
+			min-height: 650px; /* Augmentez légèrement si nécessaire */
+			background-color: var(--background-darker); /* Couleur de fond au cas où l'image ne charge pas */
+		}
+		.hero-section::after {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: var(--background-darker);
+			opacity: 0;
+			transition: opacity 0.3s;
+			z-index: 0;
+		}
+		.hero-section.loading::after {
+			opacity: 1;
+		}
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .hero-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: pre-line;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .cta-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--radius-lg);
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md), var(--glow);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .cta-button:hover {
+            background: var(--primary-hover-gradient);
+            box-shadow: 0 6px 15px rgba(147, 51, 234, 0.5), var(--glow);
+            transform: translateY(-2px);
+        }
+        /* Section filtres rapides */
+        .filter-section {
+            margin: 40px auto;
+            max-width: 800px;
+        }
+        .filter-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .filter-pill {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 2px solid var(--primary-light);
+            border-radius: 30px;
+            padding: 8px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--glow);
+        }
+        /* Section de recherche */
+        .search-section {
+            padding: 30px 20px 70px;
+            max-width: 900px;
+            margin: -50px auto 0;
+            position: relative;
+            z-index: 2;
+        }
+        .search-container {
+            background-color: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .search-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.15) 0%, rgba(30, 41, 59, 0) 70%);
+            z-index: 0;
+        }
+        .search-container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg), var(--glow);
+        }
+        .search-title {
+            font-size: 26px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--text-main);
+            position: relative;
+            font-weight: 600;
+        }
+        .search-title::after {
+            content: "";
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-gradient);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+        .search-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .progress-container {
+            display: none; /* Masquer le conteneur de la barre de progression */
+        }
+        .search-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .search-field {
+            flex: 1;
+            position: relative;
+        }
+        .search-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: "▼";
+            font-size: 10px;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        .select-wrapper:hover::after {
+            color: var(--primary-light);
+        }
+        select, input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background-color: var(--surface-light);
+            font-size: 16px;
+            color: var(--text-main);
+            appearance: none;
+            transition: var(--transition);
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.15);
+        }
+        select:hover, input:hover {
+            border-color: var(--border-hover);
+        }
+        .expertise-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            min-height: 40px;
+        }
+        .expertise-chip {
+            background-color: var(--primary-dark);
+            color: var(--text-main);
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+        .expertise-chip .remove {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+            transition: var(--transition);
+        }
+        .expertise-chip .remove:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .search-button-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-button {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md), var(--glow);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .search-button:hover {
+            background: var(--primary-hover-gradient);
+            box-shadow: 0 6px 15px rgba(147, 51, 234, 0.5), var(--glow);
+            transform: translateY(-2px);
+        }
+        .popular-mentors {
+            padding: 60px 20px;
+            background-color: var(--background-darker);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--text-main);
+        }
+        .mentors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .mentor-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            position: relative;
+            border: 1px solid var(--border);
+        }
+        .mentor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg), var(--glow);
+            border-color: var(--primary-light);
+        }
+        .mentor-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+        .mentor-info {
+            padding: 15px;
+        }
+        .mentor-category {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-light);
+            margin-bottom: 5px;
+        }
+        .mentor-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+        .mentor-rating {
+            color: #fde047;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .how-it-works {
+            padding: 60px 20px;
+            background-color: var(--surface);
+        }
+        .steps-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .step {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+            color: white;
+            box-shadow: var(--glow);
+        }
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        .step-description {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .testimonials {
+            padding: 60px 20px;
+            background-color: var(--background);
+        }
+        .testimonials-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .testimonial-card {
+            flex: 1;
+            min-width: 300px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg), var(--glow);
+            border-color: var(--primary-light);
+        }
+        .testimonial-text {
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 20px;
+        }
+        .testimonial-text::before {
+            content: '"';
+            position: absolute;
+            left: -10px;
+            top: -15px;
+            font-size: 60px;
+            color: var(--primary-light);
+            opacity: 0.3;
+            font-family: serif;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        .testimonial-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .live-chat {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-gradient);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md), var(--glow);
+            cursor: pointer;
+            z-index: 99;
+            transition: var(--transition);
+        }
+        .live-chat:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg), var(--glow);
+        }
+        .live-chat i {
+            font-size: 24px;
+        }
+        .chat-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background-color: var(--surface);
+            padding: 10px 15px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            font-size: 14px;
+            color: var(--text-main);
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+            pointer-events: none;
+            border: 1px solid var(--border);
+        }
+        .live-chat:hover .chat-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .error-message {
+            display: none;
+            color: var(--accent);
+            font-size: 13px;
+            margin-top: 6px;
+            padding-left: 5px;
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            .search-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .search-button {
+                width: 100%;
+                padding: 16px 20px;
+            }
+            .search-container {
+                padding: 20px;
+            }
+            .mentors-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Section Héro -->
+    <section class="hero-section">
+        <div class="top-bar">
+            <button class="top-button">Mon compte / Connexion</button>
+            <button class="top-button">Postuler comme Mentor</button>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Sois coaché par ton <span id="mot-changeant">Influenceur</span> préféré</h1>
+                <p class="hero-subtitle">
+                    Une plateforme innovante qui te connecte avec des influenceurs, gamers, youtubeurs et autres experts du digital prêts à partager leur réussite.
+                </p>
+                <a href="#search" class="cta-button">Trouve ton mentor</a>
+            </div>
+        </div>
+    </section>
+    <!-- Filtres rapides -->
+    <section class="filter-section">
+        <div class="filter-pills">
+            <button class="filter-pill active">YouTube</button>
+            <button class="filter-pill">Twitch</button>
+            <button class="filter-pill">Instagram</button>
+            <button class="filter-pill">TikTok</button>
+            <button class="filter-pill">Gaming</button>
+        </div>
+    </section>
+    <!-- Section de recherche -->
+    <section class="search-section" id="search">
+        <div class="search-container">
+            <h2 class="search-title">Trouve ton coach idéal</h2>
+            <p class="search-subtitle">Prends rendez-vous avec un mentor adapté à tes besoins</p>
+            <form class="search-form" id="expert-search-form">
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="expert-type">Catégorie recherchée</label>
+                        <div class="select-wrapper">
+                            <select id="expert-type" name="expert-type">
+                                <option value="">Sélectionne une catégorie</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="twitch">Twitch</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="tiktok">TikTok</option>
+                                <option value="gaming">Gaming</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="expert-type-error">Merci de sélectionner une catégorie</div>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="search-field">
+                        <label for="consultation-subject">Expertise recherchée</label>
+                        <div class="select-wrapper">
+                            <select id="subjects-youtube" class="dynamic-list" name="consultation-subject">
+                                <option value="">Sélectionne une ou plusieurs expertises</option>
+                                <option value="content-creation">Création de contenu</option>
+                                <option value="channel-growth">Croissance de chaîne</option>
+                                <option value="monetization">Monétisation</option>
+                                <option value="video-editing">Montage vidéo</option>
+                                <option value="seo-optimization">Référencement (SEO)</option>
+                            </select>
+                        </div>
+                        <div class="expertise-chips" id="selected-expertises"></div>
+                        <div class="error-message" id="expertise-error">Merci de sélectionner au moins une expertise</div>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="search-field">
+                        <label>Type d'échange</label>
+                        <div class="select-wrapper">
+                            <select id="exchange-types" class="dynamic-list">
+                                <option value="">Sélectionne un ou plusieurs types d'échange</option>
+                                <option value="visio-individuel">Visio individuel</option>
+                                <option value="visio-collectif">Visio collectif</option>
+                                <option value="appel-telephonique">Appel téléphonique</option>
+                                <option value="presentiel">Présentiel</option>
+                                <option value="messagerie">Messagerie</option>
+                            </select>
+                        </div>
+                        <div class="expertise-chips" id="selected-exchanges"></div>
+                    </div>
+                </div>
+                <div class="search-row">
+                    <div class="search-field">
+                        <label>Langues</label>
+                        <div class="select-wrapper">
+                            <select id="language-select" class="dynamic-list">
+                                <option value="">Sélectionne une ou plusieurs langues</option>
+                                <option value="francais">Français</option>
+                                <option value="anglais">Anglais</option>
+                                <option value="espagnol">Espagnol</option>
+                                <option value="chinois">Chinois</option>
+                                <option value="arabe">Arabe</option>
+                            </select>
+                        </div>
+                        <div class="expertise-chips" id="selected-languages"></div>
+                    </div>
+                </div>
+                <div class="search-button-container">
+                    <button type="submit" class="search-button">Trouver mon coach</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!-- Mentors populaires -->
+    <section class="popular-mentors">
+        <h2 class="section-title">Mentors populaires</h2>
+        <div class="mentors-grid">
+            <div class="mentor-card">
+                <div class="mentor-info">
+                    <div class="mentor-category">YouTube</div>
+                    <div class="mentor-price">80 €/h</div>
+                    <div class="mentor-rating">★ ★ ★ ★ ☆</div>
+                </div>
+            </div>
+            <div class="mentor-card">
+                <div class="mentor-info">
+                    <div class="mentor-category">Twitch</div>
+                    <div class="mentor-price">50 €/h</div>
+                    <div class="mentor-rating">★ ★ ★ ★ ★</div>
+                </div>
+            </div>
+            <div class="mentor-card">
+                <div class="mentor-info">
+                    <div class="mentor-category">Influence</div>
+                    <div class="mentor-price">100 €/h</div>
+                    <div class="mentor-rating">★ ★ ★ ★ ★</div>
+                </div>
+            </div>
+            <div class="mentor-card">
+                <div class="mentor-info">
+                    <div class="mentor-category">Growth Hacking</div>
+                    <div class="mentor-price">70 €/h</div>
+                    <div class="mentor-rating">★ ★ ★ ★ ★</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Comment ça marche -->
+    <section class="how-it-works">
+        <h2 class="section-title">Comment ça marche</h2>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Choisis</h3>
+                <p class="step-description">Trouve le mentor qui correspond à tes besoins et tes objectifs</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Réserve</h3>
+                <p class="step-description">Prends rendez-vous selon les disponibilités de ton mentor</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Échange</h3>
+                <p class="step-description">Profite d'un coaching personnalisé et accélère ta progression</p>
+            </div>
+        </div>
+    </section>
+    <!-- Témoignages -->
+    <section class="testimonials">
+        <h2 class="section-title">Ils ont adoré leur expérience</h2>
+        <div class="testimonials-container">
+            <div class="testimonial-card">
+                <p class="testimonial-text">Grâce à ma mentore, j'ai développé ma chaîne beaucoup plus vite !</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-name">Thomas</div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <p class="testimonial-text">Des conseils en or qui m'ont beaucoup aidée à percer sur Insta !</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-name">Emma</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Chat en direct -->
+    <div class="live-chat">
+        <i>💬</i>
+        <div class="chat-tooltip">Besoin d'aide pour trouver ton coach ?</div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Éléments du DOM
+            const expertTypeSelect = document.getElementById('expert-type');
+            const subjectSelector = document.getElementById('subjects-youtube');
+            const exchangeSelector = document.getElementById('exchange-types');
+            const languageSelector = document.getElementById('language-select');
+            const selectedExpertises = document.getElementById('selected-expertises');
+            const selectedExchanges = document.getElementById('selected-exchanges');
+            const selectedLanguages = document.getElementById('selected-languages');
+            const expertSearchForm = document.getElementById('expert-search-form');
+            const filterPills = document.querySelectorAll('.filter-pill');
+            // Stockage des sélections
+            let expertises = [], exchanges = [], languages = [];
+            // Messages d'erreur
+            const expertTypeError = document.getElementById('expert-type-error');
+            const expertiseError = document.getElementById('expertise-error');
+            // Animation du mot changeant
+            const mots = ["Influenceur", "Youtubeur", "Gamer"];
+            const motElement = document.getElementById("mot-changeant");
+            let index = 0;
+            function changerMot() {
+                motElement.style.opacity = "0";
+                setTimeout(() => {
+                    index = (index + 1) % mots.length;
+                    motElement.textContent = mots[index];
+                    motElement.style.opacity = "1";
+                }, 300);
+            }
+            setInterval(changerMot, 1500);
+            // Gestion générique pour les selects multiples
+            function setupMultiSelect(selector, outputContainer, storageArray, errorElement = null) {
+                selector.addEventListener('change', function () {
+                    const val = this.value.trim();
+                    if (!val || storageArray.includes(val)) return;
+                    storageArray.push(val);
+                    const chip = document.createElement('div');
+                    chip.className = 'expertise-chip';
+                    chip.innerHTML = `${this.options[this.selectedIndex].text} <span class="remove" data-value="${val}">×</span>`;
+                    outputContainer.appendChild(chip);
+                    this.selectedIndex = 0;
+                    if (errorElement) errorElement.style.display = 'none';
+                });
+                outputContainer.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('remove')) {
+                        const valueToRemove = e.target.dataset.value;
+                        storageArray.splice(storageArray.indexOf(valueToRemove), 1);
+                        e.target.parentElement.remove();
+                        if (storageArray.length === 0 && errorElement) errorElement.style.display = 'block';
+                    }
+                });
+            }
+            setupMultiSelect(subjectSelector, selectedExpertises, expertises, expertiseError);
+            setupMultiSelect(exchangeSelector, selectedExchanges, exchanges);
+            setupMultiSelect(languageSelector, selectedLanguages, languages);
+            // Gérer la soumission du formulaire
+            expertSearchForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Empêche le rechargement de la page
+
+                let isValid = true;
+                if (!expertTypeSelect.value) {
+                    expertTypeError.style.display = 'block';
+                    isValid = false;
+                }
+                if (expertises.length === 0) {
+                    expertiseError.style.display = 'block';
+                    isValid = false;
+                }
+                if (!isValid) return;
+
+                // Préparer les données à envoyer
+                const formData = {
+                    category: expertTypeSelect.value,
+                    expertises: expertises,
+                    exchanges: exchanges,
+                    languages: languages
+                };
+
+                // Rediriger vers la page 2 avec les données dans l'URL (via query params)
+                const queryString = new URLSearchParams(formData).toString();
+                window.location.href = `resultats.html?${queryString}`;
+            });
+            // Gérer les filtres rapides
+            filterPills.forEach(pill => {
+                pill.addEventListener('click', function () {
+                    filterPills.forEach(p => p.classList.remove('active'));
+                    this.classList.add('active');
+                    const filterValue = this.textContent.toLowerCase();
+                    Array.from(expertTypeSelect.options).find(option => {
+                        if (option.value.toLowerCase() === filterValue) {
+                            expertTypeSelect.selectedIndex = option.index;
+                            expertTypeSelect.dispatchEvent(new Event('change'));
+                            return true;
+                        }
+                        return false;
+                    });
+                    document.getElementById('search').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+```

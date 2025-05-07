@@ -1,0 +1,487 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>InfluCoach - Résultats de recherche</title>
+    <style>
+        :root {
+            --primary: #9333ea;
+            --primary-light: #c084fc;
+            --primary-dark: #6b21a8;
+            --primary-gradient: linear-gradient(135deg, #6b21a8, #9333ea, #3b82f6);
+            --accent: #ff3b30;
+            --text-main: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --border: #475569;
+            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --radius-md: 16px;
+            --transition: all 0.3s ease;
+            --glow: 0 0 15px rgba(147, 51, 234, 0.5);
+        }
+        body {
+            background: var(--background);
+            color: var(--text-main);
+            line-height: 1.5;
+            font-size: 16px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+        }
+        .top-bar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(10px);
+        }
+        .top-button {
+            background: none;
+            color: white;
+            border: 2px solid white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .top-button:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+        .search-header {
+            background: linear-gradient(135deg, var(--background), #1a1462);
+            padding: 60px 20px 40px;
+            text-align: center;
+        }
+        .search-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #fff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .filter-sidebar {
+            flex: 1 1 250px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+        }
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+        }
+        .filter-header span {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .dropdown.open {
+            max-height: 300px;
+            transition: max-height 0.5s ease-in;
+        }
+        .checkbox-filter {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            margin-left: 10px;
+        }
+        .checkbox-filter input {
+            margin-right: 10px;
+            accent-color: var(--primary);
+        }
+        .checkbox-filter label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .results-section {
+            flex: 1 1 800px;
+        }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-main);
+        }
+        .search-bar i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .results-count {
+            margin-left: 20px;
+            color: var(--text-secondary);
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .mentor-card {
+            background: var(--surface);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+        .mentor-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-light);
+        }
+        .mentor-image {
+            height: 180px;
+            background: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 24px;
+        }
+        .mentor-info {
+            padding: 15px;
+        }
+        .mentor-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-main);
+        }
+        .mentor-category {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+        .mentor-rating {
+            color: #fde047;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .mentor-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+        .mentor-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .mentor-button:hover {
+            opacity: 0.9;
+            box-shadow: var(--glow);
+        }
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column-reverse;
+            }
+            .filter-sidebar {
+                order: -1;
+            }
+        }
+        @media (max-width: 768px) {
+            .search-title {
+                font-size: 2rem;
+            }
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .filter-sidebar {
+                flex: 1 1 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <button class="top-button">Mon compte / Connexion</button>
+        <button class="top-button">Postuler comme Mentor</button>
+    </div>
+    <header class="search-header">
+        <h1 class="search-title">Résultats de recherche</h1>
+        <p style="color: var(--text-secondary); text-align: center;">
+            Affinant les résultats parmi <span id="total-results">42</span> mentors disponibles
+        </p>
+    </header>
+    <div class="main-container">
+        <aside class="filter-sidebar">
+            <!-- Filtre par catégorie -->
+            <div class="filter-section">
+                <div class="filter-header" onclick="toggleFilter(this)">
+                    <span>Catégories</span>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="dropdown open">
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="cat-youtube" checked onchange="applyFilters()">
+                        <label for="cat-youtube">YouTube</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="cat-twitch" checked onchange="applyFilters()">
+                        <label for="cat-twitch">Twitch</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="cat-instagram" onchange="applyFilters()">
+                        <label for="cat-instagram">Instagram</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="cat-tiktok" onchange="applyFilters()">
+                        <label for="cat-tiktok">TikTok</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="cat-gaming" checked onchange="applyFilters()">
+                        <label for="cat-gaming">Gaming</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Filtre par note -->
+            <div class="filter-section">
+                <div class="filter-header" onclick="toggleFilter(this)">
+                    <span>Note minimale</span>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="dropdown open">
+                    <div class="checkbox-filter">
+                        <input type="radio" name="rating" id="rating-4" value="4" checked onchange="applyFilters()">
+                        <label for="rating-4">★ ★ ★ ★ ☆ et plus</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="radio" name="rating" id="rating-3" value="3" onchange="applyFilters()">
+                        <label for="rating-3">★ ★ ★ ☆ ☆ et plus</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Filtre par budget -->
+            <div class="filter-section">
+                <div class="filter-header" onclick="toggleFilter(this)">
+                    <span>Budget</span>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="dropdown open">
+                    <div class="checkbox-filter">
+                        <input type="radio" name="price" id="price-50" value="50" onchange="applyFilters()">
+                        <label for="price-50">Moins de 50€</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="radio" name="price" id="price-100" value="100" checked onchange="applyFilters()">
+                        <label for="price-100">Moins de 100€</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="radio" name="price" id="price-150" value="150" onchange="applyFilters()">
+                        <label for="price-150">Moins de 150€</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Filtre par disponibilité -->
+            <div class="filter-section">
+                <div class="filter-header" onclick="toggleFilter(this)">
+                    <span>Disponibilité</span>
+                    <span class="toggle-icon">+</span>
+                </div>
+                <div class="dropdown open">
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="avail-online" checked onchange="applyFilters()">
+                        <label for="avail-online">En ligne maintenant</label>
+                    </div>
+                    <div class="checkbox-filter">
+                        <input type="checkbox" id="avail-weekend" onchange="applyFilters()">
+                        <label for="avail-weekend">Disponible le weekend</label>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <section class="results-section">
+            <div class="results-header">
+                <div class="search-bar">
+                    <i>🔍</i>
+                    <input type="text" placeholder="Rechercher un mentor..." oninput="applySearch(this.value)">
+                </div>
+                <span class="results-count"><span id="result-count">42</span> résultats</span>
+            </div>
+            <div class="results-grid" id="results-grid">
+                <!-- Les résultats seront chargés dynamiquement ici -->
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const { createClient } = supabase;
+
+        const supabaseUrl = 'https://VOTRE-PROJET.supabase.co';
+        const supabaseKey = 'VOTRE_ANON_KEY';
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        let mentors = [];
+
+        async function fetchMentors() {
+            const { data, error } = await supabaseClient.from('mentors').select('*');
+            if (error) {
+                console.error("Erreur lors du chargement des mentors :", error);
+            } else {
+                mentors = data;
+                applyFilters();
+            }
+        }
+
+        function applyFilters() {
+            const selectedCategories = [];
+            if (document.getElementById('cat-youtube').checked) selectedCategories.push('YouTube');
+            if (document.getElementById('cat-twitch').checked) selectedCategories.push('Twitch');
+            if (document.getElementById('cat-instagram').checked) selectedCategories.push('Instagram');
+            if (document.getElementById('cat-tiktok').checked) selectedCategories.push('TikTok');
+            if (document.getElementById('cat-gaming').checked) selectedCategories.push('Gaming');
+
+            const minRating = parseInt(document.querySelector('input[name="rating"]:checked')?.value || 0);
+            const maxPrice = parseInt(document.querySelector('input[name="price"]:checked')?.value || 1000);
+            const availableOnline = document.getElementById('avail-online').checked;
+            const availableWeekend = document.getElementById('avail-weekend').checked;
+
+            let filteredMentors = [...mentors];
+
+            if (selectedCategories.length > 0) {
+                filteredMentors = filteredMentors.filter(m => selectedCategories.includes(m.category));
+            }
+
+            if (minRating > 0) {
+                filteredMentors = filteredMentors.filter(m => m.rating >= minRating);
+            }
+
+            if (maxPrice < 1000) {
+                filteredMentors = filteredMentors.filter(m => m.price <= maxPrice);
+            }
+
+            if (availableOnline) {
+                filteredMentors = filteredMentors.filter(m => m.available_online === true);
+            }
+
+            if (availableWeekend) {
+                filteredMentors = filteredMentors.filter(m => m.available_weekend === true);
+            }
+
+            renderResults(filteredMentors);
+        }
+
+        function applySearch(query) {
+            let filteredMentors = [...mentors];
+            if (query.trim()) {
+                const lowerQuery = query.toLowerCase();
+                filteredMentors = filteredMentors.filter(m => 
+                    m.name.toLowerCase().includes(lowerQuery) ||
+                    m.category.toLowerCase().includes(lowerQuery)
+                );
+            }
+            renderResults(filteredMentors);
+        }
+
+        function renderResults(results) {
+            const container = document.getElementById('results-grid');
+            container.innerHTML = '';
+
+            if (results.length === 0) {
+                container.innerHTML = '<p>Aucun mentor trouvé avec ces critères.</p>';
+                return;
+            }
+
+            results.forEach(mentor => {
+                const card = document.createElement('div');
+                card.className = 'mentor-card';
+                card.innerHTML = `
+                    <div class="mentor-image">${mentor.image_url ? `<img src="${mentor.image_url}" alt="${mentor.name}" style="width:100%;height:100%;object-fit:cover;">` : 'Image'}</div>
+                    <div class="mentor-info">
+                        <div class="mentor-name">${mentor.name}</div>
+                        <div class="mentor-category">${mentor.category}</div>
+                        <div class="mentor-rating">${generateStars(mentor.rating)}</div>
+                        <div class="mentor-price">${mentor.price} €/h</div>
+                        <button class="mentor-button" onclick="viewProfile(${mentor.id})">Voir le profil</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('result-count').textContent = results.length;
+        }
+
+        function generateStars(rating) {
+            const fullStar = '★';
+            const emptyStar = '☆';
+            const stars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+            return fullStar.repeat(stars) + (halfStar ? '★' : '') + emptyStar.repeat(5 - stars - halfStar);
+        }
+
+        function viewProfile(id) {
+            window.location.href = `profil.html?id=${id}`;
+        }
+
+        function toggleFilter(element) {
+            const dropdown = element.nextElementSibling;
+            const icon = element.querySelector('.toggle-icon');
+            dropdown.classList.toggle('open');
+            icon.textContent = dropdown.classList.contains('open') ? '−' : '+';
+        }
+
+        // Charger les données à l'initialisation
+        fetchMentors();
+    </script>
+</body>
+</html>
+```
